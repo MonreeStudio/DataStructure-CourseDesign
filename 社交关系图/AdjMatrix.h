@@ -12,7 +12,7 @@ class AdjMatrix
 private:
 	Person person[maxnum];
 	int adj[maxnum][maxnum];
-	int path[maxnum];
+	int dist[maxnum];
 	int prePerson[maxnum];
 	int personNum;
 	int edgeNum;
@@ -23,10 +23,12 @@ public:
 	bool InitMatrix(int);
 	int GetPersonNum();
 	int GetEdgeNum();
+	int GetAdj(int,int);
+	string GetPersonName(int);
 	double Distance(int,int,int,int);
 	void showAdj();
 	void shortestPath();
-	Person GetPerson(int);
+	void updateXY();
 };
 
 AdjMatrix::AdjMatrix()
@@ -34,7 +36,7 @@ AdjMatrix::AdjMatrix()
 	personNum = 0;
 	edgeNum = 0;
 	fill(visited, visited + maxnum, false);
-	fill(path, path + maxnum, infinity);
+	fill(dist, dist + maxnum, infinity);
 	fill(prePerson, prePerson + maxnum, infinity);
 }
 
@@ -56,9 +58,14 @@ int AdjMatrix::GetEdgeNum()
 	return edgeNum;
 }
 
-Person AdjMatrix::GetPerson(int n)
+int AdjMatrix::GetAdj(int a,int b)
 {
-	return person[n];
+	return adj[a][b];
+}
+
+string AdjMatrix::GetPersonName(int i)
+{
+	return person[i].getName();
 }
 
 bool AdjMatrix::InitMatrix(int n)
@@ -107,7 +114,7 @@ bool AdjMatrix::CreateMatrix()
 
 void AdjMatrix::showAdj()
 {
-	cout << endl;
+	cout << endl << "邻接矩阵：" << endl;
 	for (int i = 0; i < personNum; i++)
 		for (int j = 0; j < personNum; j++)
 		{
@@ -125,23 +132,23 @@ void AdjMatrix::showAdj()
 
 void AdjMatrix::shortestPath()
 {
-	fill(path, path + personNum, infinity);
+	fill(dist, dist + personNum, infinity);
 	int FirstPerson;
 	cout << endl << "请输入第一个人的序号(所有序号从1开始)：" << endl;
 	cin >> FirstPerson;
 	FirstPerson--;
 
-	path[FirstPerson] = 0;
+	dist[FirstPerson] = 0;
 	for (int i = 0; i < personNum; i++)
 	{
 		int u = -1;
 		int min = infinity;
 		for (int j = 0; j < personNum; j++)
 		{
-			if (visited[j] == false && path[j] <= min)
+			if (visited[j] == false && dist[j] <= min)
 			{
 				u = j;	
-				min = path[j];
+				min = dist[j];
 			}
 		}
 		if (u == -1)
@@ -151,9 +158,9 @@ void AdjMatrix::shortestPath()
 		{
 			if (visited[v] == false && adj[u][v] != infinity)
 			{
-				if (path[u] + adj[u][v] < path[v])
+				if (dist[u] + adj[u][v] < dist[v])
 				{
-					path[v] = path[u] + adj[u][v];
+					dist[v] = dist[u] + adj[u][v];
 					prePerson[v] = u;	
 				}
 			}
@@ -161,7 +168,7 @@ void AdjMatrix::shortestPath()
 	}
 	for (int i = 0; i < personNum; i++)
 	{
-		cout  << person[FirstPerson].getName() << "到" << person[i].getName() << "的最短距离为: " << path[i] << endl;
+		cout  << person[FirstPerson].getName() << "到" << person[i].getName() << "的最短距离为: " << dist[i] << endl;
 	}
 	int SecondPerson;
 	cout << "请输入第二个人的序号(所有序号从1开始):" << endl;
@@ -170,16 +177,48 @@ void AdjMatrix::shortestPath()
 	stack<int> myStack;
 	int temp = SecondPerson;
 	myStack.push(SecondPerson);
+	
+	bool isConnected = true;  // 假设是联通的。
 	while (FirstPerson != temp) 
 	{
 		temp = prePerson[temp];
+		if (temp == infinity) {
+			isConnected = false;
+			break;
+		}
 		myStack.push(temp);
 	}
-	cout<< person[FirstPerson].getName() << "到" << person[SecondPerson].getName() << "的最短路线为: ";
-	while (!myStack.empty()) 
+	if (isConnected) 
 	{
-		cout << person[myStack.top()].getName() << " ";
-		myStack.pop();
+		cout << person[FirstPerson].getName() << "到" << person[SecondPerson].getName() << "的最短路线为: ";
+		while (!myStack.empty())
+		{
+			cout << person[myStack.top()].getName() << " ";
+			myStack.pop();
+		}
+		cout << endl << endl;
 	}
-	cout << endl << endl;
+	else 
+	{
+		cout << "哦豁，这个人被孤立了。" << endl;
+	}
+	
+}
+
+void AdjMatrix::updateXY()
+{
+	fill(visited, visited + maxnum, false);
+	fill(dist, dist + maxnum, infinity);
+	fill(prePerson, prePerson + maxnum, infinity);
+	for (int i = 0; i < personNum; i++)
+	{
+		person[i].InitX_Aixs();
+		person[i].InitY_Aixs();
+	}
+	for (int i = 0; i < personNum; i++)
+		for (int j = 0; j < personNum; j++)
+		{
+			if (adj[i][j] != infinity)
+				adj[i][j] = Distance(person[i].getX(), person[i].getY(), person[j].getX(), person[j].getY());
+		}
 }
