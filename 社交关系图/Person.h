@@ -6,12 +6,12 @@ using namespace std;
 #pragma once
 class Person
 {
+	friend class AdjMatrix;
 private:
 	string Name;//人名
 	int X;		//人所在X轴坐标
 	int Y;		//人所在Y轴坐标
 public:
-
 	Person()
 	{
 		Name = "";
@@ -21,30 +21,30 @@ public:
 	Person(string a) 
 	{
 		this->Name = a;
-		this->X = InitX_Aixs();
-		this->Y = InitY_Aixs();
+		InitX_Aixs();
+		InitY_Aixs();
 	}
-	int InitX_Aixs();
-	int InitY_Aixs();
+	void InitX_Aixs();
+	void InitY_Aixs();
 	string getName();
 	int getX();
 	int getY();
 };
 
-int Person::InitX_Aixs()
+void Person::InitX_Aixs()
 {
 	int tempX;
 	srand((unsigned)time(NULL)+Y);
 	tempX = (rand() % 100);
-	return tempX;
+	X = tempX;
 }
 
-int Person::InitY_Aixs()
+void Person::InitY_Aixs()
 {
 	int tempY;
 	srand((unsigned)time(NULL)+X);
 	tempY = (rand() % 100);
-	return tempY;
+	Y = tempY;
 }
 
 string Person::getName()
