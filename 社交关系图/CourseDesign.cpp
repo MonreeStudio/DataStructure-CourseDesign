@@ -5,57 +5,91 @@
 #include "AdjMatrix.h"
 using namespace std;
 
+void nearFind(AdjMatrix *a)
+{
+	queue<string> Q; //定义一个队列来储存路径上的人
+	cout << endl << "请输入需要查找附近联系人的人的序号(所有序号从1开始)：" << endl;
+	int find;
+	while (cin >> find)
+	{
+		if (find > 0 && find < a->GetPersonNum() + 1)
+			break;
+		else
+			cout << "非法输入，请重新输入！" << endl;
+	}
+	find--;
+	cout << endl;
+	//利用循环寻找附近范围能够联系到的人
+	for (int j = 0; j < a->GetPersonNum(); j++)
+		if (a->GetAdj(find, j) < 50 && a->GetPersonName(j) != a->GetPersonName(find))
+			Q.push(a->GetPersonName(j));
+	if (Q.empty())
+		cout << "哦豁，这个人附近没有人。" << endl;
+	else
+	{
+		cout << "在附近能够找到的人有：";
+		while (!Q.empty())
+		{
+			cout << Q.front() << ' ';
+			Q.pop();
+		}
+	}
+}
+
+void FindByOne(AdjMatrix *a)
+{
+	queue<string> Q;
+	cout << endl << "请输入需要一次中间人查找联系人的人的序号(所有序号从1开始)：" << endl;
+	int find;
+	while (cin >> find)
+	{
+		if (find > 0 && find < a->GetPersonNum() + 1)
+			break;
+		else
+			cout << "非法输入，请重新输入！" << endl;
+	}
+	find--;
+	for (int k = 0; k < a->GetPersonNum(); k++)
+		if (a->GetAdj(find, k) != infinity)
+			for (int m = 0; m < a->GetPersonNum(); m++)
+				if (a->GetAdj(k, m) != infinity && a->GetPersonName(m) != a->GetPersonName(find))
+					Q.push(a->GetPersonName(m));
+	if (Q.empty())
+		cout << "真是尴尬，通过一次中间人此人无法联系到其他人。" << endl;
+	else
+	{
+		cout << endl << "通过一次中间人能够联系到的人有：";
+		while (!Q.empty())
+		{
+			cout << Q.front() << ' ';
+			Q.pop();
+		}
+	}
+}
+
 int main()
 {
 	AdjMatrix* adjM = new AdjMatrix();	//创建一个对象
-	queue<string> Q1, Q2;	//定义两个队列用来存放数据
 	if (adjM->CreateMatrix())	//创建邻接矩阵
 	{
-		while(true)		//重复操作
+		bool go_on = true;
+		while(go_on)		//重复操作
 		{
 			adjM->showAdj();	//输出邻接矩阵
 			adjM->shortestPath();	//输出最短路径
-			cout << endl << "请输入需要查找附近联系人的人的序号(所有序号从1开始)：" << endl;
-			int find;	
-			cin >> find;
-			find--;
-			cout << endl;
-			//利用循环寻找附近范围能够联系到的人
-			for (int j = 0; j < adjM->GetPersonNum(); j++)
-				if (adjM->GetAdj(find, j) < 100 && adjM->GetPersonName(j) != adjM->GetPersonName(find))
-						Q1.push(adjM->GetPersonName(j));			
-			if (Q1.empty())
-				cout << "哦豁，这个人附近没有人。" << endl;
+			nearFind(adjM);
+			FindByOne(adjM);
+			cout << endl << endl << "继续吗？若要退出请输0，其他数则继续。" << endl;
+			int i;
+			cin >> i;
+			if (i == 0)
+				go_on = false;
 			else
 			{
-				cout << "在附近能够找到的人有：";
-				while (!Q1.empty())
-				{
-					cout << Q1.front() << ' ';
-					Q1.pop();
-				}
+				cout << endl;
+				adjM->updateXY();
 			}
-			//利用循环寻找通过一次中间人可以联系到的人
-			for (int k = 0; k < adjM->GetPersonNum(); k++)
-				if(adjM->GetAdj(find,k)!=infinity)
-					for (int m = 0; m < adjM->GetPersonNum(); m++)
-						if (adjM->GetAdj(k, m) != infinity && adjM->GetPersonName(m) != adjM->GetPersonName(find))
-							Q2.push(adjM->GetPersonName(m));
-			if (Q2.empty())
-				cout << "真是尴尬，通过一次中间人此人无法联系到其他人。" << endl;
-			else
-			{
-				cout << endl << "通过一次中间人能够联系到的人有：";
-				while (!Q2.empty())
-				{
-					cout << Q2.front() << ' ';
-					Q2.pop();
-				}
-			}
-			cout << endl;
-			adjM->updateXY();
 		}
 	}
-	system("pause");
 }
 
