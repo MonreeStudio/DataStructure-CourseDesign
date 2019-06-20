@@ -5,11 +5,12 @@
 #include "AdjMatrix.h"
 using namespace std;
 
-void nearFind(AdjMatrix *a)
+void nearFind(AdjMatrix *a)	//寻找附近能够联系的人
 {
 	queue<string> Q; //定义一个队列来储存路径上的人
 	cout << endl << "请输入需要查找附近联系人的人的序号(所有序号从1开始)：" << endl;
 	int find;
+	//检查输入的序号是否在范围之内
 	while (cin >> find)
 	{
 		if (find > 0 && find < a->GetPersonNum() + 1)
@@ -36,11 +37,12 @@ void nearFind(AdjMatrix *a)
 	}
 }
 
-void FindByOne(AdjMatrix *a)
+void FindByOne(AdjMatrix *a)	//寻找通过一次中间人能够联系的人
 {
 	queue<string> Q;
 	cout << endl << "请输入需要一次中间人查找联系人的人的序号(所有序号从1开始)：" << endl;
 	int find;
+	//检查输入的序号是否在范围之内
 	while (cin >> find)
 	{
 		if (find > 0 && find < a->GetPersonNum() + 1)
@@ -77,8 +79,8 @@ int main()
 		{
 			adjM->showAdj();	//输出邻接矩阵
 			adjM->shortestPath();	//输出最短路径
-			nearFind(adjM);
-			FindByOne(adjM);
+			nearFind(adjM);		//寻找附近能够联系的人
+			FindByOne(adjM);	//寻找通过一次中间人能够联系的人
 			cout << endl << endl << "继续吗？若要退出请输0，其他数则继续。" << endl;
 			int i;
 			cin >> i;
@@ -87,7 +89,7 @@ int main()
 			else
 			{
 				cout << endl;
-				adjM->updateXY();
+				adjM->updateXY();	//更新地理位置信息
 			}
 		}
 	}
