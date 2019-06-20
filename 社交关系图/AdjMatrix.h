@@ -29,7 +29,7 @@ public:
 	double Distance(int,int,int,int);	//计算两点间的距离
 	void showAdj();			//输出邻接矩阵
 	void shortestPath();	//计算并输出最短路径
-	void updateXY();
+	void updateXY();		//更新Person的对象的X、Y轴坐标
 };
 
 AdjMatrix::AdjMatrix()
@@ -107,7 +107,8 @@ bool AdjMatrix::CreateMatrix()	//创建邻接矩阵
 		for (int k = 0; k < edgeNum; k++)
 		{
 			cout << "请输入有联系的两个人的序号(序号从1开始)：	";
-			while (cin >> i >> j)
+			//检查输入的序号是否在范围之内
+			while (cin >> i >> j)	
 			{
 				if (i > 0 && i < 101 && j>0 && j < 101)
 					break;
@@ -144,9 +145,11 @@ void AdjMatrix::showAdj()	//输出邻接矩阵
 void AdjMatrix::shortestPath()	//最短路径计算和输出
 {
 	fill(dist, dist + personNum, infinity);	//初始化路径长度数组，用无穷值填充
+	fill(prePerson, prePerson + maxnum, infinity);	//初始化记录前一人信息的数组，用无穷值填充
 	int FirstPerson;	//定义出发点
 	cout << endl << "请输入第一个人的序号(所有序号从1开始)：" << endl;
-	while (cin >> FirstPerson)	//判断是否为非法输入
+	//检查输入的序号是否在范围之内
+	while (cin >> FirstPerson)	
 	{
 		if (FirstPerson > 0 && FirstPerson < personNum + 1)
 			break;
@@ -192,7 +195,8 @@ void AdjMatrix::shortestPath()	//最短路径计算和输出
 	}
 	int SecondPerson;	//定义终点
 	cout << "请输入第二个人的序号(所有序号从1开始):" << endl;
-	while (cin >> SecondPerson)	//判断是否为非法输入
+	//检查输入的序号是否在范围之内
+	while (cin >> SecondPerson)
 	{
 		if (SecondPerson > 0 && SecondPerson < personNum + 1)
 			break;
@@ -218,7 +222,7 @@ void AdjMatrix::shortestPath()	//最短路径计算和输出
 		//连通则将该点的前一个点压入栈中
 		myStack.push(temp);
 	}
-	if (isConnected) //如果是连通图
+	if (isConnected==true) //如果是连通图
 	{
 		//输出起始点到终点的最短路径
 		cout << person[FirstPerson].getName() << "到" << person[SecondPerson].getName() << "的最短路线为: ";
