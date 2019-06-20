@@ -24,7 +24,7 @@ public:
 	bool InitMatrix(int);	//初始化邻接矩阵
 	int GetPersonNum();		//获取人数
 	int GetEdgeNum();		//获取边数
-	int GetAdj(int,int);	//获取邻接矩阵中的某个值
+	double GetAdj(int,int);	//获取邻接矩阵中的某个值
 	string GetPersonName(int);	//获取Person对象的名字
 	double Distance(int,int,int,int);	//计算两点间的距离
 	void showAdj();			//输出邻接矩阵
@@ -61,7 +61,7 @@ int AdjMatrix::GetEdgeNum()		//获取边数
 	return edgeNum;
 }
 
-int AdjMatrix::GetAdj(int a,int b)	//获取邻接矩阵的某个值（通过参数确定位置）
+double AdjMatrix::GetAdj(int a,int b)	//获取邻接矩阵的某个值（通过参数确定位置）
 {
 	return adj[a][b];
 }
@@ -78,7 +78,7 @@ bool AdjMatrix::InitMatrix(int n)	//初始化邻接矩阵
 		prePerson[i] = i;
 		for (int j = 0; j < n; j++)
 		{
-			adj[i][j] = infinity;	//初识用无穷值表示
+			adj[i][j] = infinity;	//初始用无穷值表示
 		}
 	}
 	return true;
@@ -107,8 +107,14 @@ bool AdjMatrix::CreateMatrix()	//创建邻接矩阵
 		for (int k = 0; k < edgeNum; k++)
 		{
 			cout << "请输入有联系的两个人的序号(序号从1开始)：	";
-			cin >> i >> j;
-			w = Distance(person[i].getX(), person[i].getY(), person[j].getX(), person[j].getY()); //根据两点坐标计算距离
+			while (cin >> i >> j)
+			{
+				if (i > 0 && i < 101 && j>0 && j < 101)
+					break;
+				else
+					cout << "非法输入，请重新输入！" << endl;
+			}
+			w = Distance(person[i - 1].getX(), person[i - 1].getY(), person[j - 1].getX(), person[j - 1].getY()); //根据两点坐标计算距离
 			adj[i - 1][j - 1] = w;					//两点距离即边的权值
 			adj[j - 1][i - 1] = adj[i - 1][j - 1];	//邻接矩阵为对称矩阵
 		}
@@ -140,7 +146,13 @@ void AdjMatrix::shortestPath()	//最短路径计算和输出
 	fill(dist, dist + personNum, infinity);	//初始化路径长度数组，用无穷值填充
 	int FirstPerson;	//定义出发点
 	cout << endl << "请输入第一个人的序号(所有序号从1开始)：" << endl;
-	cin >> FirstPerson;
+	while (cin >> FirstPerson)	//判断是否为非法输入
+	{
+		if (FirstPerson > 0 && FirstPerson < personNum + 1)
+			break;
+		else
+			cout << "非法输入，请重新输入！" << endl;
+	}
 	FirstPerson--;
 
 	dist[FirstPerson] = 0;	//点到自身的距离为0
@@ -180,7 +192,13 @@ void AdjMatrix::shortestPath()	//最短路径计算和输出
 	}
 	int SecondPerson;	//定义终点
 	cout << "请输入第二个人的序号(所有序号从1开始):" << endl;
-	cin >> SecondPerson;
+	while (cin >> SecondPerson)	//判断是否为非法输入
+	{
+		if (SecondPerson > 0 && SecondPerson < personNum + 1)
+			break;
+		else
+			cout << "非法输入，请重新输入！" << endl;
+	}
 	SecondPerson--;
 
 	stack<int> myStack;//定义一个堆栈，用来记录最短路径所经过的点
